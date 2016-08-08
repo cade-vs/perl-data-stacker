@@ -114,8 +114,10 @@ Serialized data is expected to start with any of "BEGIN HASH", "BEGIN ARRAY"
 or "BEGIN DATA". Starting with "BEGIN DATA" is a special case where output
 perl structure will hold single scalar reference.
 
-Only chars that need escaping in key names and values are the new-line char 
-and backslash (i.e. C-style escapes).
+URL-style (%XX where XX is hex ascii code) is used for escaping of special 
+characters in key names and data values. Only chars that need escaping  
+are the new-line/LF (%0A) char and % (%5C). Unescaping is performed for all
+found escaped chars (not only for LF and %).
 
 No comments (neither line nor trailing) are allowed. If added manually, will
 be either accepted as key name or value data or will break decoding.
@@ -187,6 +189,11 @@ Serialized output data with comments:
 
     * Objects
     * Ordered hashes (i.e. Objects support for Tie::IxHash etc.)  
+
+# KNOWN BUGS
+
+Escaping probably will not work with all unicode new-line chars or when 
+reading from file with different record separator.
 
 # SEE ALSO
 
