@@ -11,7 +11,7 @@
 package Data::Stacker;
 use strict;
 use Exporter;
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 our @ISA    = qw( Exporter );
 our @EXPORT = qw(
@@ -32,6 +32,8 @@ our %EXPORT_TAGS = (
 ### STACK ####################################################################
 
 # TODO: use Scalar::Util qw( reftype );
+
+# NOTE: escaping/unescaping is intentionally left in-place
 
 sub stack_data
 {
@@ -60,6 +62,7 @@ sub __stack_hashref
   my $ec = 0;
   while( my ( $k, $v ) = each %$hr )
     {
+    $k =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
     $ec++;
     my $ref = ref $v;
     if( $ref eq 'HASH' )
@@ -74,6 +77,7 @@ sub __stack_hashref
       }
     elsif( $ref eq '' )  
       {
+      $v =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
       $str .= "$k\n=$v\n";
       }
     else
@@ -106,6 +110,7 @@ sub __stack_arrayref
       }
     elsif( $ref eq '' )  
       {
+      $v =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
       $str .= "=$v\n";
       }
     else
@@ -152,6 +157,7 @@ sub __unstack_data_decode
       }
     elsif( $line =~ /^\=/ )  
       {
+      $line =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/geo;
       return ( substr( $line, 1 ), $pos + 1 );
       }
     else
@@ -192,6 +198,7 @@ sub __unstack_data_decode_hash
   while( $pos <= @$data and $count-- )
     {
     my $k = $data->[ $pos ];
+    $k =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/geo;
     my $v;
     $pos++;
     ( $v, $pos ) = __unstack_data_decode( $data, $pos );
@@ -201,6 +208,9 @@ sub __unstack_data_decode_hash
   
   return ( \%res, $pos );
 }
+
+##############################################################################
+
 
 ##############################################################################
 
@@ -323,8 +333,10 @@ Serialized data is expected to start with any of "BEGIN HASH", "BEGIN ARRAY"
 or "BEGIN DATA". Starting with "BEGIN DATA" is a special case where output
 perl structure will hold single scalar reference.
 
-Only chars that need escaping in key names and values are the new-line char 
-and backslash (i.e. C-style escapes).
+URL-style (%XX where XX is hex ascii code) is used for escaping of special 
+characters in key names and data values. Only chars that need escaping  
+are the new-line/LF (%0A) char and % (%5C). Unescaping is performed for all
+found escaped chars (not only for LF and %).
 
 No comments (neither line nor trailing) are allowed. If added manually, will
 be either accepted as key name or value data or will break decoding.
@@ -396,6 +408,11 @@ Serialized output data with comments:
 
     * Objects
     * Ordered hashes (i.e. Objects support for Tie::IxHash etc.)  
+
+=head1 KNOWN BUGS
+
+Escaping probably will not work with all unicode new-line chars or when 
+reading from file with different record separator.
 
 =head1 SEE ALSO
 
