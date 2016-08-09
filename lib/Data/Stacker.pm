@@ -334,7 +334,7 @@ or "BEGIN DATA". Starting with "BEGIN DATA" is a special case where output
 perl structure will hold single scalar reference.
 
 URL-style (%XX where XX is hex ascii code) is used for escaping of special 
-characters in key names and data values. Only chars that need escaping  
+characters in key names and data values. The only chars that need escaping
 are the new-line/LF (%0A) char and % (%5C). Unescaping is performed for all
 found escaped chars (not only for LF and %).
 
