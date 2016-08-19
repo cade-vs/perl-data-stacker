@@ -408,17 +408,21 @@ Serialized output data with comments:
 
     * Objects
     * Ordered hashes (i.e. Objects support for Tie::IxHash etc.)  
+    * Circular structures
 
 =head1 KNOWN BUGS
 
 Escaping probably will not work with all unicode new-line chars or when 
 reading from file with different record separator.
 
+Will not work with circular (self-referred) structures.
+
 =head1 SEE ALSO
 
 Few similar-task perl modules:
 
     * Storable
+    * Sereal
     * Data::MessagePack
     * JSON
 
