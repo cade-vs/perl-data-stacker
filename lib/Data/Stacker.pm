@@ -11,6 +11,7 @@
 package Data::Stacker;
 use strict;
 use Exporter;
+use Scalar::Util;
 our $VERSION = '1.01';
 
 our @ISA    = qw( Exporter );
@@ -34,6 +35,8 @@ our %EXPORT_TAGS = (
 # TODO: use Scalar::Util qw( reftype );
 
 # NOTE: escaping/unescaping is intentionally left in-place
+
+# TODO: UTF-8 support
 
 sub stack_data
 {
@@ -64,7 +67,7 @@ sub __stack_hashref
     {
     $k =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
     $ec++;
-    my $ref = ref $v;
+    my $ref = Scalar::Util::reftype( $v );
     if( $ref eq 'HASH' )
       {
       my $cnt = keys %$v;
@@ -82,7 +85,7 @@ sub __stack_hashref
       }
     else
       {
-      die "unsupported";
+      die "unsupported [$ref]";
       }  
     }
   return "%$ec\n" . $str;
