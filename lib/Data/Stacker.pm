@@ -222,7 +222,7 @@ sub __unstack_data_decode_hash
 
 =head1 NAME
 
-  Data::Stacker provides concise text serialization for nested hash/array structs.
+Data::Stacker - Provides concise text serialization for nested hash/array structs.
 
 =head1 SYNOPSIS
 
