@@ -4,6 +4,7 @@ WriteMakefile(
 
   NAME            => 'Data::Stacker',
   VERSION_FROM    => 'lib/Data/Stacker.pm',
+  ABSTRACT_FROM   => 'lib/Data/Stacker.pm',
   META_MERGE      => {
     'meta-spec' => { version => 2 },
     resources => {
