@@ -114,7 +114,7 @@ sub __stack_arrayref
     elsif( $ref eq '' )  
       {
       my $vv = $v;
-      $vv =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
+      $vv =~ s/([\%\n])/sprintf("%%%02X",ord($1))/geo;
       $str .= "=$vv\n";
       }
     else
