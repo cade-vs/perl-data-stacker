@@ -202,6 +202,7 @@ Few similar-task perl modules:
     * Storable
     * Data::MessagePack
     * JSON
+    * Sereal
 
 # GITHUB REPOSITORY
 
@@ -215,6 +216,6 @@ Few similar-task perl modules:
 
     Vladi Belperchinov-Shabanski "Cade"
 
-    <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
+    <cade@bis.bg> <cade@noxrun.com> <cade@cpan.org>
 
-    http://cade.datamax.bg
+    http://cade.noxrun.com

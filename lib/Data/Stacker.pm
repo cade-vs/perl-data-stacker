@@ -1,9 +1,9 @@
 ##############################################################################
 #
 #  Data::Stacker is concise text serialization for hash/array nested structs.
-#  (c) Vladi Belperchinov-Shabanski "Cade" 2016
-#  <cade@bis.bg> <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
-#  http://cade.datamax.bg
+#  Copyright (c) 2016-2022 Vladi Belperchinov-Shabanski "Cade" 
+#  <cade@bis.bg> <cade@noxrun.com> <cade@cpan.org>
+#  http://cade.noxrun.com
 #
 #  GPL
 #
@@ -12,7 +12,7 @@ package Data::Stacker;
 use strict;
 use Exporter;
 use Scalar::Util;
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 our @ISA    = qw( Exporter );
 our @EXPORT = qw(
