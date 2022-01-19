@@ -66,22 +66,19 @@ sub __stack_hashref
   my $ec = 0;
   while( my ( $k, $v ) = each %$hr )
     {
-    $k =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
+    $str .= __utf8_val_encode( $k );
     $ec++;
     my $ref = Scalar::Util::reftype( $v );
     if( $ref eq 'HASH' )
       {
-      my $cnt = keys %$v;
-      $str .= "$k\n" . __stack_hashref( $v );
+      $str .= __stack_hashref( $v );
       }
     elsif( $ref eq 'ARRAY' )
       {
-      my $cnt = @$v;
-      $str .= "$k\n" . __stack_arrayref( $v );
+      $str .= __stack_arrayref( $v );
       }
     elsif( $ref eq '' )  
       {
-      $str .= "$k\n";
       $str .= __utf8_val_encode( $v );
       }
     else
@@ -104,12 +101,10 @@ sub __stack_arrayref
     my $ref = ref $v;
     if( $ref eq 'HASH' )
       {
-      my $cnt = keys %$v;
       $str .= __stack_hashref( $v );
       }
     elsif( $ref eq 'ARRAY' )
       {    
-      my $cnt = @$v;
       $str .= __stack_arrayref( $v );
       }
     elsif( $ref eq '' )  
@@ -200,8 +195,7 @@ sub __unstack_data_decode_hash
   my %res;
   while( $pos <= @$data and $count-- )
     {
-    my $k = $data->[ $pos ];
-    $k =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/geo;
+    my $k = __utf8_val_decode( $data->[ $pos ] );
     my $v;
     $pos++;
     ( $v, $pos ) = __unstack_data_decode( $data, $pos );
