@@ -1,5 +1,3 @@
-
-
 # NAME
 
     Data::Stacker provides concise text serialization for nested hash/array structs.
@@ -83,29 +81,32 @@ Example output text:
     =CTIME
     =SIZE
 
-
-
 Serialized data represents stacked tree traversal data. Each line can be one
 of:
 
 - "BEGIN HASH"  \\%\[0-9\]+
 
-It starts with char '%' followed by key+value pairs count. Each key and value
-are printed on separated line.
+    It starts with char '%' followed by key+value pairs count. Each key and value
+    are printed on separated line.
 
 - "BEGIN ARRAY"  \\@\[0-9\]+
 
-It starts with char '@' followed by array entries values count.
+    It starts with char '@' followed by array entries values count.
 
 - "BEGIN DATA"  \\=.+
 
-It represents single line, single string value. It can be either hash key 
-value or array element value.
+    It represents single line, single string value. It can be either hash key 
+    value or array element value.
+
+    NOTE: there is special begin key '-', which represents UTF8 string. It is
+    needed for perl utf8 scalars, so Stacker can encode/decode them properly.
 
 - "HASH KEY"  .+
 
-Hash keys are special case. Their position and purpose is clear, so they do
-not need designated type chars (as %, @ or =).
+    Hash keys are special case. Their position and purpose is clear, so they do
+    not need designated type chars (as %, @ or =). However, to support properly 
+    UTF8 keys as perl utf8 scalars, keys also need '=' (for non-utf8 keys) and
+    '-' for utf8 scalar keys.
 
 "BEGIN HASH" and "BEGIN ARRAY" can be found anywhere where "BEGIN DATA" is 
 expected. 
@@ -115,7 +116,7 @@ or "BEGIN DATA". Starting with "BEGIN DATA" is a special case where output
 perl structure will hold single scalar reference.
 
 URL-style (%XX where XX is hex ascii code) is used for escaping of special 
-characters in key names and data values. Only chars that need escaping  
+characters in key names and data values. The only chars that need escaping
 are the new-line/LF (%0A) char and % (%5C). Unescaping is performed for all
 found escaped chars (not only for LF and %).
 
@@ -189,26 +190,28 @@ Serialized output data with comments:
 
     * Objects
     * Ordered hashes (i.e. Objects support for Tie::IxHash etc.)  
+    * Circular structures
 
 # KNOWN BUGS
 
 Escaping probably will not work with all unicode new-line chars or when 
 reading from file with different record separator.
 
+Will not work with circular (self-referred) structures.
+
 # SEE ALSO
 
 Few similar-task perl modules:
 
     * Storable
+    * Sereal
     * Data::MessagePack
     * JSON
-    * Sereal
 
 # GITHUB REPOSITORY
 
     git@github.com:cade-vs/perl-data-stacker.git
     
-
     git clone git://github.com/cade-vs/perl-data-stacker.git
     
 
@@ -216,6 +219,5 @@ Few similar-task perl modules:
 
     Vladi Belperchinov-Shabanski "Cade"
 
-    <cade@bis.bg> <cade@noxrun.com> <cade@cpan.org>
-
+          <cade@noxrun.com>  <cade@bis.bg>  <cade@cpan.org>
     http://cade.noxrun.com

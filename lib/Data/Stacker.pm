@@ -2,7 +2,7 @@
 #
 #  Data::Stacker is concise text serialization for hash/array nested structs.
 #  Copyright (c) 2016-2022 Vladi Belperchinov-Shabanski "Cade" 
-#  <cade@bis.bg> <cade@noxrun.com> <cade@cpan.org>
+#        <cade@noxrun.com> <cade@bis.bg> <cade@cpan.org>
 #  http://cade.noxrun.com
 #
 #  GPL
@@ -13,7 +13,7 @@ use strict;
 use Exporter;
 use Scalar::Util;
 use Encode qw( is_utf8 encode decode );
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 our @ISA    = qw( Exporter );
 our @EXPORT = qw(
@@ -33,11 +33,7 @@ our %EXPORT_TAGS = (
 
 ### STACK ####################################################################
 
-# TODO: use Scalar::Util qw( reftype );
-
 # NOTE: escaping/unescaping is intentionally left in-place
-
-# TODO: UTF-8 support
 
 sub stack_data
 {
@@ -206,6 +202,8 @@ sub __unstack_data_decode_hash
   return ( \%res, $pos );
 }
 
+### UTILS ####################################################################
+
 sub __utf8_val_encode
 {
   my $v = shift;
@@ -239,7 +237,7 @@ sub __utf8_val_decode
 
 =head1 NAME
 
-  Data::Stacker provides concise text serialization for nested hash/array structs.
+  Data::Stacker provides compact text serialization for nested hash/array structs.
 
 =head1 SYNOPSIS
 
@@ -339,10 +337,15 @@ It starts with char '@' followed by array entries values count.
 It represents single line, single string value. It can be either hash key 
 value or array element value.
 
+NOTE: there is special begin key '-', which represents UTF8 string. It is
+needed for perl utf8 scalars, so Stacker can encode/decode them properly.
+
 =item "HASH KEY"  .+
 
 Hash keys are special case. Their position and purpose is clear, so they do
-not need designated type chars (as %, @ or =).
+not need designated type chars (as %, @ or =). However, to support properly 
+UTF8 keys as perl utf8 scalars, keys also need '=' (for non-utf8 keys) and
+'-' for utf8 scalar keys.
 
 =back
 
@@ -456,9 +459,8 @@ Few similar-task perl modules:
 
   Vladi Belperchinov-Shabanski "Cade"
 
-  <cade@biscom.net> <cade@datamax.bg> <cade@cpan.org>
-
-  http://cade.datamax.bg
+        <cade@noxrun.com>  <cade@bis.bg>  <cade@cpan.org>
+  http://cade.noxrun.com
 
 =cut
 
