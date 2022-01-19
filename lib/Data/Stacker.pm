@@ -12,6 +12,7 @@ package Data::Stacker;
 use strict;
 use Exporter;
 use Scalar::Util;
+use Encode qw( is_utf8 encode decode );
 our $VERSION = '1.02';
 
 our @ISA    = qw( Exporter );
@@ -80,8 +81,8 @@ sub __stack_hashref
       }
     elsif( $ref eq '' )  
       {
-      $v =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
-      $str .= "$k\n=$v\n";
+      $str .= "$k\n";
+      $str .= __utf8_val_encode( $v );
       }
     else
       {
@@ -113,9 +114,7 @@ sub __stack_arrayref
       }
     elsif( $ref eq '' )  
       {
-      my $vv = $v;
-      $vv =~ s/([\%\n])/sprintf("%%%02X",ord($1))/geo;
-      $str .= "=$vv\n";
+      $str .= __utf8_val_encode( $v );
       }
     else
       {
@@ -130,11 +129,12 @@ sub __stack_arrayref
 sub unstack_data
 {
   my $str = shift;
-  
+
   my @str = split /\n/, $str;
   chomp( @str );
-  
+
   my ( $res_hr ) = __unstack_data_decode( \@str );
+  
   return $res_hr;
 }
 
@@ -159,10 +159,9 @@ sub __unstack_data_decode
       my $count = $1;
       return __unstack_data_decode_hash( $data, $pos + 1, $count );
       }
-    elsif( $line =~ /^\=/ )  
+    elsif( $line =~ /^[=-]/ )  
       {
-      $line =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/geo;
-      return ( substr( $line, 1 ), $pos + 1 );
+      return ( __utf8_val_decode( $line ), $pos + 1 );
       }
     else
       {
@@ -212,6 +211,32 @@ sub __unstack_data_decode_hash
   
   return ( \%res, $pos );
 }
+
+sub __utf8_val_encode
+{
+  my $v = shift;
+  $v =~ s/([\\\n])/sprintf("%%%02X",ord($1))/geo;
+  if( is_utf8( $v ) )
+    {
+    $v = encode( 'UTF-8', $v );
+    return "-$v\n";
+    }
+  else
+    {
+    return "=$v\n";
+    }  
+}
+
+sub __utf8_val_decode
+{
+  my $v = shift;
+  if( $v =~ /^-/ )
+    {
+    $v = decode( 'UTF-8', $v );
+    }
+  $v =~ s/\%([0-9A-F][0-9A-F])/chr(hex($1))/geo;
+  return substr( $v, 1 );
+}      
 
 ##############################################################################
 
